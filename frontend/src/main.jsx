@@ -2,11 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { ChakraProvider, extendTheme,ColorModeScript } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools";
-import "./index.css"; // Import your CSS file here
+import "./index.css"; 
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 
-// Global styles
+
 const styles = {
   global: (props) => ({
     body: {

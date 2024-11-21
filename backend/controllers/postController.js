@@ -58,105 +58,110 @@ const getPost = async (req, res) => {
   }
 };
 
-// const deletePost = async (req, res) => {
-//   try {
-//     const post = await Post.findById(req.params.id);
-//     if (!post) {
-//       return res.status(404).json({ error: "Post not found" });
-//     }
+const deletePost = async (req, res) => {
+  try {
+   
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
 
-//     if (post.postedBy.toString() !== req.user._id.toString()) {
-//       return res.status(401).json({ error: "Unauthorized to delete post" });
-//     }
+    if (post.postedBy.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ error: "Unauthorized to delete post" });
+    }
 
-//     if (post.img) {
-//       const imgId = post.img.split("/").pop().split(".")[0];
-//       await cloudinary.uploader.destroy(imgId);
-//     }
+    // if (post.img) {
+    //   const imgId = post.img.split("/").pop().split(".")[0];
+    //   await cloudinary.uploader.destroy(imgId);
+    // }
 
-//     await Post.findByIdAndDelete(req.params.id);
+    await Post.findByIdAndDelete(req.params.id);
 
-//     res.status(200).json({ message: "Post deleted successfully" });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-// const likeUnlikePost = async (req, res) => {
-//   try {
-//     const { id: postId } = req.params;
-//     const userId = req.user._id;
+const likeUnlikePost = async (req, res) => {
+  try {
+    const { id: postId } = req.params;
+    const userId = req.user._id;
 
-//     const post = await Post.findById(postId);
+    const post = await Post.findById(postId);
 
-//     if (!post) {
-//       return res.status(404).json({ error: "Post not found" });
-//     }
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
 
-//     const userLikedPost = post.likes.includes(userId);
+    const userLikedPost = post.likes.includes(userId);
 
-//     if (userLikedPost) {
-//       // Unlike post
-//       await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
-//       res.status(200).json({ message: "Post unliked successfully" });
-//     } else {
-//       // Like post
-//       post.likes.push(userId);
-//       await post.save();
-//       res.status(200).json({ message: "Post liked successfully" });
-//     }
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
+    if (userLikedPost) {
+      // Unlike post
+      await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+      res.status(200).json({ message: "Post unliked successfully" });
+    } else {
+      // Like post
+      post.likes.push(userId);
+      await post.save();
+      res.status(200).json({ message: "Post liked successfully" });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-// const replyToPost = async (req, res) => {
-//   try {
-//     const { text } = req.body;
-//     const postId = req.params.id;
-//     const userId = req.user._id;
-//     const userProfilePic = req.user.profilePic;
-//     const username = req.user.username;
+const replyToPost = async (req, res) => {
+  try {
+    const { text } = req.body;
+    const postId = req.params.id;
+    const userId = req.user._id;
+    const userProfilePic = req.user.profilePic;
+    const username = req.user.username;
 
-//     if (!text) {
-//       return res.status(400).json({ error: "Text field is required" });
-//     }
+    if (!text) {
+      return res.status(400).json({ error: "Text field is required" });
+    }
 
-//     const post = await Post.findById(postId);
-//     if (!post) {
-//       return res.status(404).json({ error: "Post not found" });
-//     }
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
 
-//     const reply = { userId, text, userProfilePic, username };
+    const reply = { userId, text, userProfilePic, username };
 
-//     post.replies.push(reply);
-//     await post.save();
+    post.replies.push(reply);
+    await post.save();
 
-//     res.status(200).json(reply);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
+    res.status(200).json(reply);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-// const getFeedPosts = async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
+const getFeedPosts = async (req, res) => {
+ 
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+   
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-//     const following = user.following;
+    const following = user.following;
+    console.log(`following: ${following}`)
 
-//     const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
-//       createdAt: -1,
-//     });
+    const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
+      createdAt: -1,
+    });
 
-//     res.status(200).json(feedPosts);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
+    res.status(200).json(feedPosts);
+    
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 // const getUserPosts = async (req, res) => {
 //   const { username } = req.params;
@@ -179,9 +184,9 @@ const getPost = async (req, res) => {
 export {
   createPost,
   getPost,
-  //   deletePost,
-  //   likeUnlikePost,
-  //   replyToPost,
-  //   getFeedPosts,
+ deletePost,
+  likeUnlikePost,
+ replyToPost,
+ getFeedPosts,
   //   getUserPosts,
 };
